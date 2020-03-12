@@ -1,0 +1,72 @@
+﻿<Window x:Class="Sharada.StudentMgtDemo.Client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Sharada.StudentMgtDemo.Client"
+        mc:Ignorable="d"
+        Title="Student Dashboard" WindowState="Maximized" WindowStartupLocation="CenterScreen">
+    <Grid IsEnabled="{Binding IsNotBusy}">
+        <Grid.Resources>
+            <local:VisibilityConverter x:Key="VisibilityConverter" />
+            <Style TargetType="StackPanel">
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="True">
+                        <Setter Property="Opacity" Value="1" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.5" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <StackPanel Background="Aqua" Grid.Column="0" Margin="5">
+            <TextBlock FontSize="20" Margin="5">Students</TextBlock>
+            <DataGrid x:Name="studentGrid" AutoGeneratingColumn="OnAutoGeneratingColumn"  ItemsSource="{Binding Students}" SelectionChanged="OnSelectionChanged" />
+        </StackPanel>
+        <StackPanel Background="Beige" Grid.Column="1" Margin="5">
+            <TextBlock FontSize="20" Margin="5">Enrollments</TextBlock>
+            <DataGrid ItemsSource="{Binding Enrollments}" />
+        </StackPanel>
+        <StackPanel Background="Bisque" Grid.Column="2" Margin="5">
+            <TextBlock FontSize="20" Margin="5">Services</TextBlock>
+            <DataGrid ItemsSource="{Binding Services}" />
+        </StackPanel>
+        <Grid Grid.ColumnSpan="3" Visibility="{Binding IsBusy, Converter={StaticResource VisibilityConverter}}">
+            <Grid.Resources>
+                <!-- Pulse -->
+                <Storyboard x:Key="Pulse" RepeatBehavior="Forever">
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="PulseBox">
+                        <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1.15"/>
+                        <EasingDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
+                    </DoubleAnimationUsingKeyFrames>
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="PulseBox">
+                        <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1.15"/>
+                        <EasingDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
+                    </DoubleAnimationUsingKeyFrames>
+                </Storyboard>
+            </Grid.Resources>
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                    <BeginStoryboard Storyboard="{StaticResource Pulse}"/>
+                </EventTrigger>
+            </Grid.Triggers>
+            <Border x:Name="PulseBox" Background="#50FFFFFF" RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Border.RenderTransform>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" FontWeight="Bold">Loading...</TextBlock>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
